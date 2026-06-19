@@ -6,6 +6,8 @@ import lpoo.math.*;
  *
  * @author Paulo Pagliosa
  */
+
+// não "final" porque Particle2 extende Point2
 public class Point2
 {
   public static float distance(Point2 p1, Point2 p2)

@@ -1,18 +1,34 @@
 package lpoo.math;
 
 /**
- * Utility class for floating-point comparisons.
- * @author Paulo Pagliosa (adapted)
+ *
+ * @author Paulo Pagliosa
  */
-public final class Real
+public class Real
+  implements Comparable<Real>
 {
-  public static final float eps = 1e-6f;
+  public static final float ZERO = 1e-6f;
 
-  public static boolean isEqual(float a, float b)
+  float value;
+
+  static public boolean isZero(float a)
   {
-    return Math.abs(a - b) <= eps;
+    return Math.abs(a) <= ZERO;
   }
 
-  private Real() {}
+  static public boolean isEqual(float a, float b)
+  {
+    return isZero(a - b);
+  }
+
+  public Real(float value)
+  {
+    this.value = value;
+  }
+
+  public int compareTo(Real r)
+  {
+    return isEqual(value, r.value) ? 0 : value < r.value ? -1 : +1;
+  }
 
 } // Real

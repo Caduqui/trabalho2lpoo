@@ -3,17 +3,12 @@ package lpoo.geom;
 import java.util.*;
 
 /**
- * Generic spatial Quadtree for 2-D nearest-neighbor and radius queries.
- *
  * @param <P> any subtype of Point2
  * @author Paulo Pagliosa (adapted for LPOO assignment)
  */
 public class Quadtree<P extends Point2>
   implements Iterable<Quadtree.NodeData<P>>
 {
-  // -----------------------------------------------------------------------
-  // NodeData – public view of a tree node
-  // -----------------------------------------------------------------------
   public static class NodeData<P extends Point2>
     implements Iterable<P>
   {
@@ -66,18 +61,12 @@ public class Quadtree<P extends Point2>
 
   } // NodeData
 
-  // -----------------------------------------------------------------------
-  // Public constants
-  // -----------------------------------------------------------------------
   public static final float fatFactor      = 1.01f;
   public static final int   minPointsPerNode = 5;
   public static final int   maxDepth        = 8;
 
   public final int pointsPerNode;
 
-  // -----------------------------------------------------------------------
-  // Constructor
-  // -----------------------------------------------------------------------
   public Quadtree(final P[] points, int pointsPerNode)
   {
     this(bounds(points), pointsPerNode);
@@ -86,9 +75,6 @@ public class Quadtree<P extends Point2>
     split(root);
   }
 
-  // -----------------------------------------------------------------------
-  // Tree information
-  // -----------------------------------------------------------------------
   public final Bounds2 bounds()
   {
     return root.bounds();
@@ -115,14 +101,7 @@ public class Quadtree<P extends Point2>
     return new QuadtreeLeafIterator<>(root);
   }
 
-  // -----------------------------------------------------------------------
-  // KNN search
-  // -----------------------------------------------------------------------
-  /**
-   * Returns a KNN object holding the (up to) k points nearest to {@code point}.
-   * Only points for which {@code filter.run(p)} returns true are considered;
-   * if {@code filter} is null, all points are considered.
-   */
+  // Busca KNN
   public KNN<P> findNeighbors(P point, int k, PointFunc<P> filter)
   {
     KNN<P> knn = new KNN<>(k);
@@ -130,18 +109,8 @@ public class Quadtree<P extends Point2>
     return knn;
   }
 
-  // -----------------------------------------------------------------------
-  // Radius search
-  // -----------------------------------------------------------------------
-  /**
-   * Calls {@code f.run(p)} for every point within {@code radius} of {@code point}.
-   * Stops early if {@code f.run} returns false.
-   * Returns the number of points processed by f.
-   */
-  public long forEachNeighbor(P point,
-                               float radius,
-                               PointFunc<P> f,
-                               PointFunc<P> filter)
+  // Busca por raio
+  public long forEachNeighbor(P point, float radius, PointFunc<P> f, PointFunc<P> filter)
   {
     long[] counter = {0L};
     boolean[] stopped = {false};
@@ -149,9 +118,6 @@ public class Quadtree<P extends Point2>
     return counter[0];
   }
 
-  // -----------------------------------------------------------------------
-  // Internal Node class
-  // -----------------------------------------------------------------------
   static class Node<P extends Point2> extends NodeData<P>
   {
     Node(final Bounds2 bounds)
@@ -179,14 +145,10 @@ public class Quadtree<P extends Point2>
       points.add(p);
     }
 
-    @SuppressWarnings("unchecked")
     Node<P>[] children;
 
   } // Node
 
-  // -----------------------------------------------------------------------
-  // Private state
-  // -----------------------------------------------------------------------
   private Node<P> root;
   private int nodeCount;
   private int leafCount;
@@ -198,9 +160,6 @@ public class Quadtree<P extends Point2>
     nodeCount = 1;
   }
 
-  // -----------------------------------------------------------------------
-  // Tree construction helpers
-  // -----------------------------------------------------------------------
   private void split(Node<P> node)
   {
     if (node.pointCount() <= pointsPerNode || node.depth == maxDepth)
@@ -208,7 +167,7 @@ public class Quadtree<P extends Point2>
 
     Point2 p = node.bounds.p1();
     Point2 s = node.bounds.size().mul(0.5f);
-    int    d = node.depth + 1;
+    int d = node.depth + 1;
 
     @SuppressWarnings("unchecked")
     Node<P>[] ch = new Node[4];
@@ -251,23 +210,15 @@ public class Quadtree<P extends Point2>
     return count;
   }
 
-  // -----------------------------------------------------------------------
-  // KNN recursive search
-  // -----------------------------------------------------------------------
-  private void findNeighbors(Node<P> node,
-                              P point,
-                              KNN<P> knn,
-                              PointFunc<P> filter)
+  //KNN Busca Recursiva
+  private void findNeighbors(Node<P> node, P point, KNN<P> knn, PointFunc<P> filter)
   {
-    // Prune: if squared distance from point to this node's AABB
-    // is already >= worst stored distance, skip the whole subtree.
     float nodeDistSq = node.bounds.squaredDistance(point);
     if (knn.isFull() && nodeDistSq >= knn.maxDistanceSq())
       return;
 
     if (node.isLeaf())
     {
-      // Test every point in this leaf
       for (P p : node)
       {
         if (filter != null && !filter.run(p))
@@ -279,28 +230,18 @@ public class Quadtree<P extends Point2>
     }
     else
     {
-      // Visit children ordered by distance to point (closest first)
       int[] order = childOrder(node, point);
       for (int idx : order)
         findNeighbors(node.children[idx], point, knn, filter);
     }
   }
 
-  // -----------------------------------------------------------------------
-  // Radius search recursive implementation
-  // -----------------------------------------------------------------------
-  private void forEachNeighbor(Node<P> node,
-                                P point,
-                                float radiusSq,
-                                PointFunc<P> f,
-                                PointFunc<P> filter,
-                                long[] counter,
-                                boolean[] stopped)
+  //Busca por raio recursiva
+  private void forEachNeighbor(Node<P> node, P point, float radiusSq, PointFunc<P> f, PointFunc<P> filter, long[] counter, boolean[] stopped)
   {
     if (stopped[0])
       return;
 
-    // Prune: if the closest point of the node's AABB is beyond radius, skip
     float nodeDistSq = node.bounds.squaredDistance(point);
     if (nodeDistSq > radiusSq)
       return;
@@ -331,21 +272,16 @@ public class Quadtree<P extends Point2>
     {
       int[] order = childOrder(node, point);
       for (int idx : order)
-        forEachNeighbor(node.children[idx], point, radiusSq,
-                        f, filter, counter, stopped);
+        forEachNeighbor(node.children[idx], point, radiusSq, f, filter, counter, stopped);
     }
   }
 
-  // -----------------------------------------------------------------------
-  // Helper: sort children by squared distance to point (closest first)
-  // -----------------------------------------------------------------------
   private int[] childOrder(Node<P> node, P point)
   {
     float[] dists = new float[4];
     for (int i = 0; i < 4; i++)
       dists[i] = node.children[i].bounds.squaredDistance(point);
 
-    // Simple insertion sort on 4 elements
     Integer[] order = {0, 1, 2, 3};
     for (int i = 1; i < 4; i++)
     {
@@ -363,9 +299,6 @@ public class Quadtree<P extends Point2>
 
 } // Quadtree
 
-// ---------------------------------------------------------------------------
-// Leaf iterator (traverses all nodes, leaves first in DFS order)
-// ---------------------------------------------------------------------------
 final class QuadtreeLeafIterator<P extends Point2>
   implements Iterator<Quadtree.NodeData<P>>
 {

@@ -78,10 +78,7 @@ public class Bounds2
     return p1.x <= p.x && p2.x > p.x && p1.y <= p.y && p2.y > p.y;
   }
 
-  /**
-   * Returns the squared minimum distance from point p to this bounding box.
-   * If p is inside the box, returns 0.
-   */
+  // Necessário para a poda da árvore nas buscas
   public float squaredDistance(Point2 p)
   {
     float dx = Math.max(0, Math.max(p1.x - p.x, p.x - p2.x));
