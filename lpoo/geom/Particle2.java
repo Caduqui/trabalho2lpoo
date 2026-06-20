@@ -94,8 +94,7 @@ public class Particle2
   @Override
   public String toString()
   {
-    return super.toString()
-           + String.format(" vel<%.2f,%.2f> rgb(%d,%d,%d)", vx, vy, r, g, b);
+    return super.toString() + String.format(" vel<%.2f,%.2f> rgb(%d,%d,%d)", vx, vy, r, g, b);
   }
 
 } // Particle2

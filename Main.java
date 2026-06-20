@@ -4,6 +4,9 @@ import lpoo.geom.*;
 
 public class Main
 {
+
+  private static final String[] COLOR_NAMES = {"RED", "GREEN", "BLUE", "YELLOW", "CYAN", "MAGENTA"};
+  private static final int[][]  COLOR_VALUES = {Particle2.RED, Particle2.GREEN, Particle2.BLUE, Particle2.YELLOW, Particle2.CYAN, Particle2.MAGENTA};
   public static void main(String[] args)
   {
     Console.println("=== Quadtree KNN ===");
@@ -43,11 +46,20 @@ public class Main
       Console.println("  0 - Sair");
       switch (Console.readInt("Operacao"))
       {
-        case 1: doKNN(qt, points, null, viewer);          break;
-        case 2: doRadius(qt, points, null, viewer);       break;
-        case 3: printNeighborsByIndex(qt, points, null);  break;
-        case 0: run = false;                              break;
-        default: Console.error("invalid option");
+        case 1: 
+          doKNN(qt, points, null, viewer);
+          break;
+        case 2: 
+          doRadius(qt, points, null, viewer);       
+          break;
+        case 3: 
+          printNeighborsByIndex(qt, points, null);  
+          break;
+        case 0: 
+          run = false;                              
+          break;
+        default: 
+          Console.error("invalid option");
       }
     }
   }
@@ -113,14 +125,13 @@ public class Main
     }
   }
 
-  private static <P extends Point2> void doKNN(
-      Quadtree<P> qt, P[] points, PointFunc<P> filter, QuadtreeViewer<P> viewer)
+  private static <P extends Point2> void doKNN(Quadtree<P> qt, P[] points, PointFunc<P> filter, QuadtreeViewer<P> viewer)
   {
     int idx = readIndex(points.length); if (idx < 0) return;
-    int k   = Console.readPositiveInt("k");
+    int k = Console.readPositiveInt("k");
 
-    P query       = points[idx];
-    KNN<P> knn    = qt.findNeighbors(query, k, filter);
+    P query = points[idx];
+    KNN<P> knn = qt.findNeighbors(query, k, filter);
 
     Console.printf("%nConsulta[%d]: %s%n", idx, query);
     Console.printf("Vizinhos (k=%d, encontrados=%d):%n", k, knn.size());
@@ -133,15 +144,14 @@ public class Main
     if (viewer != null) viewer.showKNN(query, knn);
   }
 
-  private static <P extends Point2> void doRadius(
-      Quadtree<P> qt, P[] points, PointFunc<P> filter, QuadtreeViewer<P> viewer)
+  private static <P extends Point2> void doRadius(Quadtree<P> qt, P[] points, PointFunc<P> filter, QuadtreeViewer<P> viewer)
   {
-    int   idx    = readIndex(points.length); if (idx < 0) return;
+    int idx = readIndex(points.length); if (idx < 0) return;
     float radius = Console.readPositiveFloat("Raio");
 
-    P query          = points[idx];
-    List<P> found    = new ArrayList<>();
-    long count       = qt.forEachNeighbor(query, radius, p -> { found.add(p); return true; }, filter);
+    P query = points[idx];
+    List<P> found = new ArrayList<>();
+    long count = qt.forEachNeighbor(query, radius, p -> { found.add(p); return true; }, filter);
 
     Console.printf("%nConsulta[%d]: %s  raio=%.4f%n", idx, query, radius);
     Console.printf("Encontrados: %d%n", count);
@@ -151,13 +161,12 @@ public class Main
     if (viewer != null) viewer.showRadius(query, radius, found);
   }
 
-  private static <P extends Point2> void printNeighborsByIndex(
-      Quadtree<P> qt, P[] points, PointFunc<P> filter)
+  private static <P extends Point2> void printNeighborsByIndex(Quadtree<P> qt, P[] points, PointFunc<P> filter)
   {
     int idx = readIndex(points.length); if (idx < 0) return;
-    int k   = Console.readPositiveInt("k");
+    int k = Console.readPositiveInt("k");
 
-    P query    = points[idx];
+    P query = points[idx];
     KNN<P> knn = qt.findNeighbors(query, k, filter);
 
     Console.printf("%nPonto[%d]: %s%n", idx, query);
@@ -211,8 +220,10 @@ public class Main
     float max = Console.readPositiveFloat("Coordenada maxima (ex: 100.0)");
     Random rng = new Random();
     Point2[] pts = new Point2[n];
+
     for (int i = 0; i < n; i++)
       pts[i] = new Point2(rng.nextFloat() * max, rng.nextFloat() * max);
+    
     Console.printf("%d pontos gerados.%n", n);
     return pts;
   }
@@ -312,10 +323,18 @@ public class Main
       Console.println("  " + c);
   }
 
-  private static int[] askColor()
+   private static int[] askColor()
   {
-    Console.println("Cor do filtro (RGB):");
-    return new int[]{ Console.readInt("  r [0-255]"), Console.readInt("  g [0-255]"), Console.readInt("  b [0-255]") };
+    Console.println("Cor do filtro:");
+    for (int i = 0; i < COLOR_NAMES.length; i++)
+      Console.printf("  %d - %s%n", i + 1, COLOR_NAMES[i]);
+    int choice = Console.readInt("Escolha") - 1;
+    if (choice < 0 || choice >= COLOR_VALUES.length)
+    {
+      Console.error("invalid color");
+      return COLOR_VALUES[0];
+    }
+    return COLOR_VALUES[choice];
   }
 
   private static int readIndex(int max)
