@@ -11,13 +11,10 @@ public class Particle2
 {
   public float vx;
   public float vy;
-
-  /** RGB color components in [0, 255]. */
   public int r;
   public int g;
   public int b;
 
-  // Named color constants for convenience
   public static final int[] RED    = {255,   0,   0};
   public static final int[] GREEN  = {  0, 255,   0};
   public static final int[] BLUE   = {  0,   0, 255};
@@ -70,7 +67,7 @@ public class Particle2
     setColor(rgb[0], rgb[1], rgb[2]);
   }
 
-  /** Returns true if this particle's color matches the given RGB values. */
+  // Retorna verdadeiro se a cor da partícula corresponder aos valores RGB
   public boolean hasColor(int r, int g, int b)
   {
     return this.r == r && this.g == g && this.b == b;
