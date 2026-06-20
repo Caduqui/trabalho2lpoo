@@ -7,10 +7,6 @@ import javax.swing.*;
 import lpoo.geom.*;
 
 /**
- * Visualizador genérico da Quadtree.
- * A5 (bônus): destaca resultados de KNN e busca por raio.
- *
- * O canvas se auto-escala para encaixar a bounding box da árvore na janela.
  *
  * @author Paulo Pagliosa (adaptado para trabalho LPOO)
  */
@@ -18,9 +14,6 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
 {
   private final QuadtreeControl<P> control;
 
-  // -----------------------------------------------------------------------
-  // Construtor
-  // -----------------------------------------------------------------------
   public QuadtreeViewer(Quadtree<P> qt)
   {
     super("Quadtree Viewer");
@@ -30,7 +23,7 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
     control = new QuadtreeControl<>(qt);
     getContentPane().add(control, BorderLayout.CENTER);
 
-    // Painel de botões (bônus A5)
+    // Painel de botões
     JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
     JButton btnClear = new JButton("Limpar busca");
@@ -49,27 +42,21 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
     toFront();
   }
 
-  // -----------------------------------------------------------------------
-  // API pública para exibir resultados (A5)
-  // -----------------------------------------------------------------------
-
-  /** Destaca os k vizinhos mais próximos encontrados pelo KNN. */
+  // Destaca os k vizinhos mais próximos encontrados pelo KNN.
   public void showKNN(P queryPoint, KNN<P> knn)
   {
     control.setKNNResult(queryPoint, knn);
     control.repaint();
   }
 
-  /** Destaca os pontos encontrados pela busca por raio. */
+  // Destaca os pontos encontrados pela busca por raio.
   public void showRadius(P queryPoint, float radius, List<P> results)
   {
     control.setRadiusResult(queryPoint, radius, results);
     control.repaint();
   }
 
-  // -----------------------------------------------------------------------
   // Canvas interno
-  // -----------------------------------------------------------------------
   private static final class QuadtreeControl<P extends Point2> extends Canvas
   {
     private final Quadtree<P> qt;
@@ -78,17 +65,16 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
     private float scale  = 1f;
     private float offX   = 0f;
     private float offY   = 0f;
-    // Fator de zoom manual (teclas + / -)
+    // Zoom manual + / -
     private float zoom   = 1f;
 
     // Estado da busca exibida
-    private P          queryPoint;
-    private KNN<P>     knn;
-    private float      searchRadius;
-    private List<P>    radiusResults;
-    private boolean    showingRadius;
+    private P queryPoint;
+    private KNN<P> knn;
+    private float searchRadius;
+    private List<P> radiusResults;
+    private boolean showingRadius;
 
-    // -----------------------------------------------------------------------
     QuadtreeControl(Quadtree<P> qt)
     {
       this.qt = qt;
@@ -105,11 +91,9 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
         }
       });
 
-      // Permite receber foco para eventos de teclado
       setFocusable(true);
     }
 
-    // -----------------------------------------------------------------------
     void clearSearch()
     {
       queryPoint    = null;
@@ -134,9 +118,7 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
       showingRadius = true;
     }
 
-    // -----------------------------------------------------------------------
-    // Calcula escala e offset para encaixar a árvore no canvas com margem
-    // -----------------------------------------------------------------------
+    // Calcula escala para encaixar a árvore no canvas com margem
     private void computeTransform()
     {
       int w = getWidth();
@@ -159,13 +141,10 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
       offY = margin + ((h - 2 * margin) - sz.y * scale) / 2f - p1.y * scale;
     }
 
-    // Converte coordenada do mundo para pixel
+    // Converte coordenadas para pixel
     private float wx(float x) { return x * scale + offX; }
     private float wy(float y) { return y * scale + offY; }
 
-    // -----------------------------------------------------------------------
-    // Formas auxiliares
-    // -----------------------------------------------------------------------
     private Shape shapeBox(Bounds2 bounds)
     {
       Point2 p1 = bounds.p1();
@@ -188,13 +167,11 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
       return new Ellipse2D.Float(px - r, py - r, r * 2, r * 2);
     }
 
-    // -----------------------------------------------------------------------
     @Override
     public void paint(Graphics g)
     {
       Graphics2D g2 = (Graphics2D) g;
-      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                          RenderingHints.VALUE_ANTIALIAS_ON);
+      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
       computeTransform();
 
@@ -206,13 +183,13 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
       if (radiusResults != null)
         highlighted.addAll(radiusResults);
 
-      // 1) Desenha nós da árvore
+      // Desenha nós da árvore
       for (Quadtree.NodeData<P> node : qt)
       {
         Shape r = shapeBox(node.bounds());
-        g2.setColor(node.isEmpty()
-                    ? new Color(220, 255, 220)   // folha vazia → verde claro
-                    : new Color(255, 240, 200));  // folha com pontos → laranja claro
+
+        // folha vazia -> verde, folha com pontos -> laranja
+        g2.setColor(node.isEmpty() ? new Color(220, 255, 220) : new Color(255, 240, 200));
         g2.fill(r);
         g2.setColor(Color.DARK_GRAY);
         g2.setStroke(new BasicStroke(0.5f));
@@ -222,7 +199,7 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
           drawPoint(g2, p, highlighted.contains(p));
       }
 
-      // 2) Círculo de raio
+      // Círculo de raio
       if (showingRadius && queryPoint != null)
       {
         g2.setColor(new Color(0, 100, 255, 50));
@@ -232,7 +209,7 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
         g2.draw(shapeCircle(queryPoint, searchRadius));
       }
 
-      // 3) Linhas KNN: ponto de consulta → cada vizinho
+      // Linhas KNN: ponto de consulta → cada vizinho
       if (knn != null && queryPoint != null)
       {
         g2.setColor(new Color(180, 0, 0, 160));
@@ -240,12 +217,11 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
         for (int i = 0; i < knn.size(); i++)
         {
           P np = knn.get(i).point;
-          g2.draw(new Line2D.Float(wx(queryPoint.x), wy(queryPoint.y),
-                                   wx(np.x),         wy(np.y)));
+          g2.draw(new Line2D.Float(wx(queryPoint.x), wy(queryPoint.y), wx(np.x), wy(np.y)));
         }
       }
 
-      // 4) Ponto de consulta (azul, maior)
+      // Ponto de consulta (azul, maior)
       if (queryPoint != null)
       {
         float px = wx(queryPoint.x);
@@ -257,7 +233,7 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
         g2.draw(new Ellipse2D.Float(px - 6, py - 6, 12, 12));
       }
 
-      // 5) Legenda
+      // Legenda
       g2.setStroke(new BasicStroke(1f));
       int ly = getHeight() - 8;
       g2.setColor(Color.DARK_GRAY);
@@ -270,7 +246,6 @@ public class QuadtreeViewer<P extends Point2> extends JFrame
         g2.drawString("Pontos: " + qt.pointCount() + " | Nós: " + qt.size() + " | Folhas: " + qt.leafCount(), 8, ly);
     }
 
-    // -----------------------------------------------------------------------
     private void drawPoint(Graphics2D g2, P p, boolean highlight)
     {
       if (highlight)

@@ -37,13 +37,11 @@ public class KNN<P extends Point2>
     return count;
   }
 
-  /** Maximum capacity (k). */
   public int capacity()
   {
     return k;
   }
 
-  /** Returns true if already holds k entries. */
   public boolean isFull()
   {
     return count == k;
@@ -59,7 +57,7 @@ public class KNN<P extends Point2>
   {
     if (count == 0)
       return Float.MAX_VALUE;
-    // farthest is last; we stored actual distance, square it for comparison
+    // O mais distante é o último, armazenamos a distância real e a elevamos ao quadrado para comparação
     float d = entries[count - 1].distance;
     return d * d;
   }
