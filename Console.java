@@ -5,8 +5,9 @@ import java.util.Date;
 
 /**
  *
- * @author Paulo Pagliosa
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
+
 public class Console
 {
   private final static InputStreamReader keyboard;

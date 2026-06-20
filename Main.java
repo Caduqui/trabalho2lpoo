@@ -2,6 +2,11 @@ import java.util.*;
 import java.io.*;
 import lpoo.geom.*;
 
+/**
+ *
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
+ */
+
 public class Main
 {
 

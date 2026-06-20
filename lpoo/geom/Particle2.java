@@ -1,11 +1,10 @@
 package lpoo.geom;
 
 /**
- * A 2-D particle with velocity and an RGB color.
- * Extends Point2 so it can be stored in a Quadtree<Particle2>.
  *
- * @author Paulo Pagliosa (adapted for LPOO assignment – A3)
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
+
 public class Particle2
   extends Point2
 {

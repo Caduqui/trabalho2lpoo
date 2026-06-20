@@ -1,9 +1,10 @@
 package lpoo.geom;
 
 /**
- * Functional interface for filtering/processing points.
- * @author Paulo Pagliosa
+ *
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
+
 @FunctionalInterface
 public interface PointFunc<P>
 {

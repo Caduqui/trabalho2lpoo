@@ -3,9 +3,10 @@ package lpoo.geom;
 import java.util.*;
 
 /**
- * @param <P> any subtype of Point2
- * @author Paulo Pagliosa (adapted for LPOO assignment)
+ *
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
+
 public class Quadtree<P extends Point2>
   implements Iterable<Quadtree.NodeData<P>>
 {
