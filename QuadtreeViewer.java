@@ -8,8 +8,9 @@ import lpoo.geom.*;
 
 /**
  *
- * @author Paulo Pagliosa (adaptado para trabalho LPOO)
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
+
 public class QuadtreeViewer<P extends Point2> extends JFrame
 {
   private final QuadtreeControl<P> control;

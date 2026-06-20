@@ -2,8 +2,9 @@ package lpoo.math;
 
 /**
  *
- * @author Paulo Pagliosa
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
+
 public class Real
   implements Comparable<Real>
 {

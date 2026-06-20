@@ -4,7 +4,7 @@ import lpoo.math.*;
 
 /**
  *
- * @author Paulo Pagliosa
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
 
 // não "final" porque Particle2 extende Point2

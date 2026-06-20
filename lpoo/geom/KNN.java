@@ -1,11 +1,10 @@
 package lpoo.geom;
 
 /**
- * Stores up to k nearest neighbor pairs (point, squared distance),
- * kept sorted from closest to farthest.
  *
- * @author trabalho LPOO
+ * @author Guilherme Lima Conte, João Pedro de Abreu Ferri, Ricardo Honório Trindade Tavares
  */
+
 public class KNN<P extends Point2>
 {
   public static class Entry<P extends Point2>
