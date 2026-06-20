@@ -158,6 +158,7 @@ public class Quadtree<P extends Point2>
     this.pointsPerNode = Math.max(minPointsPerNode, pointsPerNode);
     root = new Node<>(new Bounds2(bounds).inflate(fatFactor));
     nodeCount = 1;
+    leafCount = 1;
   }
 
   private void split(Node<P> node)
@@ -221,6 +222,8 @@ public class Quadtree<P extends Point2>
     {
       for (P p : node)
       {
+        if (p == point)
+          continue;
         if (filter != null && !filter.run(p))
           continue;
         float dx = p.x - point.x;
@@ -252,6 +255,8 @@ public class Quadtree<P extends Point2>
       {
         if (stopped[0])
           return;
+        if (p == point)
+          continue;
         if (filter != null && !filter.run(p))
           continue;
         float dx = p.x - point.x;
@@ -311,12 +316,16 @@ final class QuadtreeLeafIterator<P extends Point2>
   @Override
   public Quadtree.NodeData<P> next()
   {
-    Quadtree.Node<P> node = stack.pop();
-
-    if (!node.isLeaf())
-      for (int i = 4; i > 0;)
-        stack.push(node.children[--i]);
-    return node;
+  Quadtree.Node<P> node = stack.pop();
+  while (!node.isLeaf())
+  {
+    for (int i = 4; i > 0;)
+    {
+      stack.push(node.children[--i]);
+    }
+    node = stack.pop();
+  }
+  return node;
   }
 
   QuadtreeLeafIterator(Quadtree.Node<P> root)
