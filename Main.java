@@ -122,6 +122,8 @@ public class Main
           printNeighborsByIndex(qt, particles, null);  
           break;
         case 0:
+          if (viewer != null)
+          {viewer.dispose();}
           run = false;
           break;
         default:
